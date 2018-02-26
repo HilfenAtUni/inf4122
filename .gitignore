@@ -1,0 +1,27 @@
+# binary file
+*mycopy
+*reverse
+
+# test file
+*.rev
+
+# c
+*.o
+*.obj
+*.a
+*.
+
+# mac
+*.DS_Store
+
+# git
+*.git/
+
+# svn
+*.svn
+
+# backup file
+*.bak
+*.swp
+*.bk
+
