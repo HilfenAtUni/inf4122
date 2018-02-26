@@ -117,7 +117,8 @@ void getfilehandles(char *inname, char *outname, int *infd, int *outfd)
 void copy(int infd, int outfd, size_t buflen)
 {
     //----------------------------------------------------------------------------------------------
-    int b_read, b_write;
+    int b_read;
+    int b_write;
     char *buffer = (char*)malloc(sizeof(char)*buflen);
     char *ptr;
 
