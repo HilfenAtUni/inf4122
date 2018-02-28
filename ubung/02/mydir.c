@@ -42,10 +42,18 @@ int mydir(char *dirname)
         // printf("%s: %lu B\n", ent->d_name, buf.st_size);
         if(S_ISDIR(buf.st_mode)){
             printf("%s/\n", ent->d_name);
+            // add this folder to folder_list
         }else{
             printf("%s\n", ent->d_name);
         }
     }
+    // display folder_list
+    /*
+    for(int i=0; i<length(folder_list); i++){
+        printf("\n%s:\n", folder_list[i]);
+        mydir(folder_list[i]);
+    }
+    */
 
     // close the dir pointer
     closedir(dir);
