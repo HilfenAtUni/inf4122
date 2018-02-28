@@ -1,100 +1,61 @@
 #define _POSIX_C_SOURCE 200112L
 
-#include <ctype.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <string.h>
+
 #include <sys/stat.h>
-#include <unistd.h>
-/*------------------------------------------------------------------------------------------------*/
-// add this just for test
-#include <assert.h>
-/*------------------------------------------------------------------------------------------------*/
 
-void getparams(int argc, char **argv, size_t *buflen, char **inname);
-
-void getfilehandles(char *inname, int *infd);
-
-void mydir(int infd);
-
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
+    DIR *dir;
+    struct dirent *ent;
+    char dirname[256];
 
-    char *inname;
-    size_t buflen;
-    int infd;
-
-    getparams(argc, argv, &buflen, &inname);
-    getfilehandles(inname, &infd);
-
-    mydir(infd);
-
-    if (close(infd) == -1) {
-        perror("Fehler beim Schließen der Eingabedatei");
-        exit(EXIT_FAILURE);
-    }
-
-    return EXIT_SUCCESS;
-}
-
-void getparams(int argc, char **argv, size_t *buflen, char **inname)
-{
-    int opterrflag = 0;
-    int opt;
-
-    /* Standard-Wert */
-    *buflen = 1;
-
-    /* Kommandozeilenoptionen verarbeiten */
-    while ((opt = getopt(argc, argv, "b:")) != -1) {
-        switch (opt) {
-        case 'b':
-            opterrflag = sscanf(optarg, "%zu", buflen) != 1 || *buflen <= 0
-                || *buflen >= 1024 * 1024;
-            break;
-        case '?':
-            opterrflag = 1;
-            break;
-        }
-    }
-
-    if (optind < argc) {
-        *inname = argv[optind++];
+    if (argc == 1) {
+        strcpy(dirname, ".");
     } else {
-        opterrflag = 1;
+        strcpy(dirname, argv[1]);
     }
 
-    if (opterrflag) {
-        fprintf(stderr,
-                        "Benutzung:\n"
-                        "\n"
-                        "  %s [-b n] <Eingabedatei> <Ausgabedatei>\n"
-                        "\n" "b[=1]: Puffergröße mit 0 < n <= 1024^2\n", argv[0]);
-        exit(EXIT_FAILURE);
-    }
-}
-
-void getfilehandles(char *inname, int *infd)
-{
-    //----------------------------------------------------------------------------------------------
-    printf("enter function getfilehandles ---->\n");
-
-    // get input file handle by name string of the input file
-    *infd = open(inname, O_RDONLY);
-    if(*infd == -1) {
-        printf("fail to open input file");
-        exit(1);
+    dir = opendir(dirname);
+    if (dir == NULL) {
+        fprintf(stderr, "unable to opendir %s\n", dirname);
+        return 1;
     }
 
-    printf("inname: %p, infd: %d\n", inname, *infd);
-    printf("leave function: getfilehandles <----\n");
-    //----------------------------------------------------------------------------------------------
-}
+    while ((ent = readdir(dir)) != NULL) {
+        // if (ent->d_name[0] == '.') {
+        //     continue;
+        // }
+        struct stat buf;
+        lstat(ent->d_name, &buf);
+        // printf("%s: %lu B\n", ent->d_name, buf.st_size);
+        if(S_ISDIR(buf.st_mode)){
+            printf("%s/\n", ent->d_name);
+        }else{
+            printf("%s\n", ent->d_name);
+        }
+        // switch(ent->d_type){
+        //     case 4:
+        //     {
+        //         printf("%s/\n", ent->d_name);
+        //         break;
+        //     }
+        //     case 8:
+        //     {
+        //         printf("%s\n", ent->d_name);
+        //         break;
+        //     }
+        //     default:
+        //     {
+        //         break;
+        //     }
+        // }
+    }
 
-void mydir(int infd)
-{
-    printf("enter function mydir --->\n");
-    // do here....
-    printf("leave function mydir <---\n");
+    // close the dir pointer
+    closedir(dir);
+    return 0;
 }
