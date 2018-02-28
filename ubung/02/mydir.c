@@ -7,17 +7,28 @@
 
 #include <sys/stat.h>
 
+
+int mydir(char *dirname);
+
 int main(int argc, char *argv[])
 {
-    DIR *dir;
-    struct dirent *ent;
     char dirname[256];
 
-    if (argc == 1) {
+    if (argc == 1) { // when no parameter, as "."
         strcpy(dirname, ".");
     } else {
         strcpy(dirname, argv[1]);
     }
+
+
+    return mydir(dirname);
+}
+
+
+int mydir(char *dirname)
+{
+    DIR *dir;
+    struct dirent *ent;
 
     dir = opendir(dirname);
     if (dir == NULL) {
@@ -26,9 +37,6 @@ int main(int argc, char *argv[])
     }
 
     while ((ent = readdir(dir)) != NULL) {
-        // if (ent->d_name[0] == '.') {
-        //     continue;
-        // }
         struct stat buf;
         lstat(ent->d_name, &buf);
         // printf("%s: %lu B\n", ent->d_name, buf.st_size);
@@ -37,22 +45,6 @@ int main(int argc, char *argv[])
         }else{
             printf("%s\n", ent->d_name);
         }
-        // switch(ent->d_type){
-        //     case 4:
-        //     {
-        //         printf("%s/\n", ent->d_name);
-        //         break;
-        //     }
-        //     case 8:
-        //     {
-        //         printf("%s\n", ent->d_name);
-        //         break;
-        //     }
-        //     default:
-        //     {
-        //         break;
-        //     }
-        // }
     }
 
     // close the dir pointer

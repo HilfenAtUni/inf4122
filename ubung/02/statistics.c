@@ -7,17 +7,25 @@
 
 #include <sys/stat.h>
 
+int statistics(char *dirname);
+
 int main(int argc, char *argv[])
 {
-    DIR *dir;
-    struct dirent *ent;
     char dirname[256];
 
-    if (argc == 1) {
+    if (argc == 1) { // when no parameter, as "."
         strcpy(dirname, ".");
     } else {
         strcpy(dirname, argv[1]);
     }
+
+    return statistics(dirname);
+}
+
+int statistics(char *dirname)
+{
+    DIR *dir;
+    struct dirent *ent;
 
     dir = opendir(dirname);
     if (dir == NULL) {
