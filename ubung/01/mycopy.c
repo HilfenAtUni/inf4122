@@ -93,7 +93,7 @@ void getparams(int argc, char **argv, size_t *buflen, char **inname,
 void getfilehandles(char *inname, char *outname, int *infd, int *outfd)
 {
     //----------------------------------------------------------------------------------------------
-    printf("enter function getfilehandles ---->\n");
+    // printf("enter function getfilehandles ---->\n");
 
     // get input file handle by name string of the input file
     *infd = open(inname, O_RDONLY);
@@ -103,14 +103,14 @@ void getfilehandles(char *inname, char *outname, int *infd, int *outfd)
     }
 
     // get output file handle by name string of the output file
-    *outfd = open(outname, O_WRONLY|O_CREAT, S_IWUSR);
+    *outfd = open(outname, O_WRONLY|O_CREAT, S_IWUSR|S_IRUSR);
     if(*outfd == -1) {
         printf("fail to create output file");
         exit(1);
     }
 
-    printf("infd: %d, outfd: %d\n", *infd, *outfd);
-    printf("leave function: getfilehandles <----\n");
+    // printf("infd: %d, outfd: %d\n", *infd, *outfd);
+    // printf("leave function: getfilehandles <----\n");
     //----------------------------------------------------------------------------------------------
 }
 
@@ -122,8 +122,8 @@ void copy(int infd, int outfd, size_t buflen)
     char *buffer = (char*)malloc(sizeof(char)*buflen);
     char *ptr;
 
-    printf("enter function: copy ----->\n");
-    printf("infd: %d, outfd: %d, buffer[%lu]: %lu\n", infd, outfd, buflen, sizeof(*buffer));
+    // printf("enter function: copy ----->\n");
+    // printf("infd: %d, outfd: %d, buffer[%lu]: %lu\n", infd, outfd, buflen, sizeof(*buffer));
 
     // assert(buffer!=NULL); // when alloc buffer is not successed, assert this programm
 
@@ -154,6 +154,6 @@ void copy(int infd, int outfd, size_t buflen)
     }
 
     free(buffer);
-    printf("leave function: copy <----\n");
+    // printf("leave function: copy <----\n");
     //----------------------------------------------------------------------------------------------
 }

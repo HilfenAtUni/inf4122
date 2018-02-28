@@ -9,34 +9,28 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
+void getparams(int argc, char **argv,  char **inname);
 
-void getparams(int argc, char **argv,  char **inname, char **outname);
 
-void getfilehandles(char *inname, char *outname, int *infd, int *outfd);
-
-void reverse(char *inname, char *outname);
+void reverse(char *inname);
 
 int main(int argc, char **argv)
 {
 
     char *inname;
-    char *outname;
-    int infd;
-    int outfd;
 
-    getparams(argc, argv, &inname, &outname);
+    getparams(argc, argv, &inname);
     //getfilehandles(inname, outname, &infd, &outfd);
 
-    reverse(inname, outname);
+    reverse(inname);
 
 
 }
 
-void getparams(int argc, char **argv, char **inname,
-                             char **outname)
+void getparams(int argc, char **argv, char **inname)
 {
     int opterrflag = 0;
-    int opt;
 
 
     if (optind < argc) {
@@ -46,22 +40,16 @@ void getparams(int argc, char **argv, char **inname,
         opterrflag = 1;
     }
 
-    if (optind == argc) {
-        *outname ="Test.rev";
-
-        printf("outname: %s\n", *outname);
-    } else {
-        opterrflag = 1;
-    }
 
     if (opterrflag) {
         exit(EXIT_FAILURE);
     }
 
+
 }
 
 
-void reverse (char *inname, char *outname)
+void reverse (char *inname)
 {
 
     int pos=-1;
@@ -74,32 +62,31 @@ void reverse (char *inname, char *outname)
     strcat(revFileName, ".rev");
 
     // get infile
-    printf("begin to get inname\n");
+    // printf("begin to get inname\n");
     if((infd = open(inname,O_RDONLY)) == -1) {
         printf("fail to open source file");
         exit(1);
     }
-    printf("infd: %p\n", infd);
+    // printf("infd: %p\n", infd);
 
     // make outfile
-    printf("begin to get outname\n");
+    // printf("begin to get outname\n");
     if((outfd = open(revFileName, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR)) == -1)
     {
         printf("fail to create target file");
         exit(1);
     }
-    printf("outfd: %p\n", outfd);
+    // printf("outfd: %p\n", outfd);
 
     int file = infd;
     char buffer[1];
 
-    if(read(file, buffer, 1) != 1)  return 1;
-    printf(buffer, "\n");
+    if(read(file, buffer, 1) != 1)  exit(1);
+    // printf(buffer, "\n"); // must not to display content of buffer
     while(lseek(file, pos, SEEK_END) >= 0){
         pos = pos-1; // pos--;
-        if(read(file, buffer, 1) != 1)  return 1;
+        if(read(file, buffer, 1) != 1)  exit(1);
         write(outfd,buffer,1);
-        printf(buffer, "\n");
     }
 
     if (close(outfd) == -1) {
@@ -112,7 +99,6 @@ void reverse (char *inname, char *outname)
         exit(EXIT_FAILURE);
     }
 
-    return EXIT_SUCCESS;
+    exit(EXIT_SUCCESS);
 
 }
-
