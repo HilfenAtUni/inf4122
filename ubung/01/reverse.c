@@ -53,7 +53,7 @@ void reverse (char *inname)
 {
 
     int pos=-1;
-    int filesize;
+    // int filesize;
     int infd;
     int outfd;
     char *revFileName[sizeof(inname)+4];
