@@ -8,24 +8,27 @@
 #include <sys/stat.h>
 
 
-int mydir(char *dirname);
+int mydir(char *dirname, char param_r);
 
 int main(int argc, char *argv[])
 {
     char dirname[256];
+    char param_r = 0;
 
     if (argc == 1) { // when no parameter, as "."
         strcpy(dirname, ".");
     } else {
+        // if there a '-r'
+        // param_r = 1;
+        // else
         strcpy(dirname, argv[1]);
     }
 
-
-    return mydir(dirname);
+    return mydir(dirname, param_r);
 }
 
 
-int mydir(char *dirname)
+int mydir(char *dirname, char param_r)
 {
     DIR *dir;
     struct dirent *ent;
@@ -49,9 +52,11 @@ int mydir(char *dirname)
     }
     // display folder_list
     /*
-    for(int i=0; i<length(folder_list); i++){
-        printf("\n%s:\n", folder_list[i]);
-        mydir(folder_list[i]);
+    if(1 == param_r){
+        for(int i=0; i<length(folder_list); i++){
+            printf("\n%s:\n", folder_list[i]);
+            mydir(folder_list[i]);
+        }
     }
     */
 
