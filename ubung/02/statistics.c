@@ -4,14 +4,16 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <string.h>
-
+#include <unistd.h>
 #include <sys/stat.h>
 
-int statistics(char *dirname);
+int statistics(char *dirname, int *stat_list);
 
 int main(int argc, char *argv[])
 {
     char dirname[256];
+    int stat_list[8] = {0};
+
 
     if (argc == 1) { // when no parameter, as "."
         strcpy(dirname, ".");
@@ -19,21 +21,28 @@ int main(int argc, char *argv[])
         strcpy(dirname, argv[1]);
     }
 
-    return statistics(dirname);
+   statistics(dirname, stat_list);
+   printf("0 Bytes - 512 Bytes: %d \n", stat_list[0]);
+   printf("512 Bytes - 1 KiB: %d \n", stat_list[1]);
+   printf("1 KiB - 2 KiB: %d \n", stat_list[2]);
+   printf("2 KiB - 4 KiB: %d \n", stat_list[3]);
+   printf("4 KiB - 8 KiB: %d \n", stat_list[4]);
+   printf("8 KiB - 64 KiB: %d \n", stat_list[5]);
+   printf("64 KiB - 1 MiB: %d \n", stat_list[6]);
+   printf("Ab 1 MiB: %d \n", stat_list[7]);
+
+
 }
 
-int statistics(char *dirname)
+int statistics(char *dirname, int *stat_list)
 {
     DIR *dir;
     struct dirent *ent;
+  chdir(dirname);
 
-    dir = opendir(dirname);
-    if (dir == NULL) {
-        fprintf(stderr, "unable to opendir %s\n", dirname);
-        return 1;
-    }
+    dir = opendir(".");
 
-    int stat_list[8] = {0};
+
     while ((ent = readdir(dir)) != NULL) {
         // if (ent->d_name[0] == '.') {
         //     continue;
@@ -41,7 +50,7 @@ int statistics(char *dirname)
         struct stat buf;
         lstat(ent->d_name, &buf);
 
-        if(10 == ent->d_type){ // link will be ignored
+        if(10 == ent->d_type || S_ISDIR(buf.st_mode)){ // link will be ignored
             continue;
         }else if(0<=buf.st_size && 512>buf.st_size){
             // size = "0 KiB";
@@ -68,19 +77,26 @@ int statistics(char *dirname)
             //
             stat_list[7] += 1;
         }
-        if(S_ISDIR(buf.st_mode)){
-            // printf("%s/\n", ent->d_name);
-            printf("[%d] %s/:\t\t%8lu B\n", ent->d_type, ent->d_name, buf.st_size);
-        }else{
-            // printf("%s\n", ent->d_name);
-            printf("[%d] %s:\t\t%8lu B\n", ent->d_type, ent->d_name, buf.st_size);
-        }
     }
+    //Itterieren ueber die Unterordner
+   rewinddir(dir);
+   char currPath[FILENAME_MAX];
+   while ((ent = readdir(dir)) != NULL) {
+     strcpy(currPath,"./");
+     if(strcmp(ent->d_name,".") && strcmp(ent->d_name,"..")){
+      struct stat buf;
+      lstat(ent->d_name, &buf);
+      if(S_ISDIR(buf.st_mode)){
+        if(chdir(strcat(currPath,ent->d_name))== 0){
+          statistics(".", stat_list);
+          chdir("../");
+         }else{
 
-    for (int i = 0; i < 8; ++i)
-    {
-        printf("%d ", stat_list[i]);
+        }
+      }
     }
+}
+
 
     // close the dir pointer
     closedir(dir);
