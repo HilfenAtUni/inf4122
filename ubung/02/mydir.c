@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include <assert.h>
+
 
 int mydir(char *dirname, char param_r);
 
@@ -15,77 +17,85 @@ int main(int argc, char *argv[])
     char dirname[256];
     char param_r = 0;
     int opt;
-    while ((opt = getopt(argc, argv, "r:")) != -1) {
-      if (opt=='r') {
-        param_r=1;
+    while(-1 != (opt = getopt(argc, argv, "r:")))
+    {
+        if (opt=='r') {
+            param_r = 1;
         }
-     }
+    }
 
-
-    if (argc == 1) { // when no parameter, as "."
+    if (1 == argc) { // when no parameter, as "."
         strcpy(dirname, ".");
-    } else if (argc >= 2 && !param_r==1){
+    } else if ((2 <= argc) && (1 != param_r)){
         strcpy(dirname, argv[1]);
     } else {
-      strcpy(dirname,argv[2]);
+        strcpy(dirname, argv[2]);
     }
+
+    chdir(".");
 
     return mydir(dirname, param_r);
 }
-
 
 int mydir(char *dirname, char param_r)
 {
     DIR *dir;
     struct dirent *ent;
-  chdir(dirname);
 
-    dir = opendir(".");
-    if (dir == NULL) {
+    dir = opendir(dirname);
+    if (NULL == dir) {
         fprintf(stderr, "unable to opendir %s\n", dirname);
         return 1;
     }
 
-    while ((ent = readdir(dir)) != NULL) {
+    if (1 == param_r) {
+        printf("\n%s:\n", dirname);
+    } else {
+        printf("\n");
+    }
+
+    while (NULL != (ent = readdir(dir))) {
         struct stat buf;
+
         lstat(ent->d_name, &buf);
-        // printf("%s: %lu B\n", ent->d_name, buf.st_size);
-        if(S_ISDIR(buf.st_mode)){
+
+        if((4 == ent->d_type) && S_ISDIR(buf.st_mode)){
+            // printf("----- %d\n", ent->d_type);
             printf("%s/\n", ent->d_name);
-
-            // add this folder to folder_list
         }else{
-
             printf("%s\n", ent->d_name);
         }
     }
 
     // Schleife die Rekursiv durch die Unterordner geht und diese Ausgibt wenn -r gesetzt wurde.
-    if(param_r ==1){
-      rewinddir(dir);
-      char currPath[FILENAME_MAX];
-      while ((ent = readdir(dir)) != NULL) {
-        strcpy(currPath,"./");
-        if(strcmp(ent->d_name,".") && strcmp(ent->d_name,"..")){
-        struct stat buf;
-        lstat(ent->d_name, &buf);
-        // printf("%s: %lu B\n", ent->d_name, buf.st_size);
-        if(S_ISDIR(buf.st_mode)){
-            if(chdir(strcat(currPath,ent->d_name))== 0){
-            printf("\n %s :",currPath);
-            mydir(".", param_r);
-            chdir("../");
-            }else{
+    if(1 == param_r) {
+        char curr_path[FILENAME_MAX];
 
+        rewinddir(dir);
+
+        while(NULL != (ent = readdir(dir)))
+        {
+            struct stat buf;
+
+            strcpy(curr_path, dirname);
+
+            if((0 == strcmp(ent->d_name, ".")) || (0 == strcmp(ent->d_name, ".."))) {
+                continue;
+            }
+
+            lstat(ent->d_name, &buf);
+
+            if((4 == ent->d_type) && S_ISDIR(buf.st_mode)) {
+                strcat(curr_path, "/");
+                strcat(curr_path, ent->d_name);
+                mydir(curr_path, param_r);
             }
         }
-        }
-      }
 
     }
 
-
     // close the dir pointer
     closedir(dir);
+
     return 0;
 }

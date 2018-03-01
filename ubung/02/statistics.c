@@ -14,14 +14,14 @@ int main(int argc, char *argv[])
     char dirname[256];
     int stat_list[8] = {0};
 
-
-    if (argc == 1) { // when no parameter, as "."
+    if(1 == argc) { // when no parameter, as "."
         strcpy(dirname, ".");
     } else {
         strcpy(dirname, argv[1]);
     }
 
    statistics(dirname, stat_list);
+
    printf("0 Bytes - 512 Bytes: %d \n", stat_list[0]);
    printf("512 Bytes - 1 KiB: %d \n", stat_list[1]);
    printf("1 KiB - 2 KiB: %d \n", stat_list[2]);
@@ -31,74 +31,70 @@ int main(int argc, char *argv[])
    printf("64 KiB - 1 MiB: %d \n", stat_list[6]);
    printf("Ab 1 MiB: %d \n", stat_list[7]);
 
-
+   return 0;
 }
+
 
 int statistics(char *dirname, int *stat_list)
 {
     DIR *dir;
     struct dirent *ent;
-  chdir(dirname);
+
+    chdir(dirname);
 
     dir = opendir(".");
 
-
-    while ((ent = readdir(dir)) != NULL) {
-        // if (ent->d_name[0] == '.') {
-        //     continue;
-        // }
+    while (NULL != (ent = readdir(dir)))
+    {
         struct stat buf;
+
         lstat(ent->d_name, &buf);
 
-        if(10 == ent->d_type || S_ISDIR(buf.st_mode)){ // link will be ignored
+        if(10 == ent->d_type || S_ISDIR(buf.st_mode)) { // link will be ignored
             continue;
-        }else if(0<=buf.st_size && 512>buf.st_size){
-            // size = "0 KiB";
+        }else if((0 <= buf.st_size) && (512 > buf.st_size)) {
             stat_list[0] += 1;
-        }else if(512<=buf.st_size && 1024>buf.st_size){
-            // size
+        }else if((512 <= buf.st_size) && (1024 > buf.st_size)) {
             stat_list[1] += 1;
-        }else if(1024<=buf.st_size && (2*1024)>buf.st_size){
-            //
+        }else if((1024 <= buf.st_size) && ((2*1024) > buf.st_size)) {
             stat_list[2] += 1;
-        }else if((2*1024)<=buf.st_size && (4*1024)>buf.st_size){
-            //
+        }else if(((2*1024) <= buf.st_size) && ((4*1024) > buf.st_size)) {
             stat_list[3] += 1;
-        }else if((4*1024)<=buf.st_size && (8*1024)>buf.st_size){
-            //
+        }else if(((4*1024) <= buf.st_size) && ((8*1024) > buf.st_size)) {
             stat_list[4] += 1;
-        }else if((8*1024)<=buf.st_size && (64*1024)>buf.st_size){
-            //
+        }else if(((8*1024) <= buf.st_size) && ((64*1024) > buf.st_size)) {
             stat_list[5] += 1;
-        }else if(64*1024<=buf.st_size && (1024*1024)>buf.st_size){
-            //
+        }else if((64*1024 <= buf.st_size) && ((1024*1024)>buf.st_size)) {
             stat_list[6] += 1;
-        }else if((1024*1024<=buf.st_size)){
-            //
+        }else if((1024*1024) <= buf.st_size) {
             stat_list[7] += 1;
         }
     }
-    //Itterieren ueber die Unterordner
-   rewinddir(dir);
-   char currPath[FILENAME_MAX];
-   while ((ent = readdir(dir)) != NULL) {
-     strcpy(currPath,"./");
-     if(strcmp(ent->d_name,".") && strcmp(ent->d_name,"..")){
-      struct stat buf;
-      lstat(ent->d_name, &buf);
-      if(S_ISDIR(buf.st_mode)){
-        if(chdir(strcat(currPath,ent->d_name))== 0){
-          statistics(".", stat_list);
-          chdir("../");
-         }else{
 
+    // Itterieren ueber die Unterordner
+    rewinddir(dir);
+
+    char currPath[FILENAME_MAX];
+
+    while (NULL != (ent = readdir(dir)))
+    {
+        strcpy(currPath,"./");
+
+        if(strcmp(ent->d_name,".") && strcmp(ent->d_name,"..")) {
+            struct stat buf;
+
+            lstat(ent->d_name, &buf);
+            if(S_ISDIR(buf.st_mode)) {
+                if(0 == chdir(strcat(currPath, ent->d_name))) {
+                    statistics(".", stat_list);
+                    chdir("../");
+                }
+            }
         }
-      }
     }
-}
-
 
     // close the dir pointer
     closedir(dir);
+
     return 0;
 }
