@@ -28,16 +28,19 @@ int main(int argc, char *argv[])
     }
 
     // when no parameter, as "."
-    if ((1 == argc) || \
-        ((2 == argc) && (0 == strcmp("-r", argv[1])))) {
+    if (1 == argc) {
         strcpy(dirname, ".");
+    } else if((2 == argc) && (0 == strcmp("-r", argv[1]))){
+        strcpy(dirname, ".");
+    } else if(0 != strcmp("-r", argv[1])){
+        strcpy(dirname, argv[1]);
     } else if ((2 < argc) && (1 != param_r)){
         strcpy(dirname, argv[1]);
     } else {
         strcpy(dirname, argv[2]);
     }
 
-    chdir(".");
+    // chdir(".");
 
     return mydir(dirname, param_r);
 }

@@ -2,9 +2,7 @@ CC=gcc
 CFLAGS=-Wall -std=c99
 DEBUG=-O0 -g
 
-all:
-	$(CC) $(CFLAGS) $(DEBUG) mydir.c -o mydir
-	$(CC) $(CFLAGS) $(DEBUG) statistics.c -o statistics
+all: mydir statistics
 
 mydir:
 	$(CC) $(CFLAGS) $(DEBUG) mydir.c -o mydir
