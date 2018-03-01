@@ -92,7 +92,6 @@ void getparams(int argc, char **argv, size_t *buflen, char **inname,
 
 void getfilehandles(char *inname, char *outname, int *infd, int *outfd)
 {
-    //----------------------------------------------------------------------------------------------
     // printf("enter function getfilehandles ---->\n");
 
     // get input file handle by name string of the input file
@@ -111,12 +110,10 @@ void getfilehandles(char *inname, char *outname, int *infd, int *outfd)
 
     // printf("infd: %d, outfd: %d\n", *infd, *outfd);
     // printf("leave function: getfilehandles <----\n");
-    //----------------------------------------------------------------------------------------------
 }
 
 void copy(int infd, int outfd, size_t buflen)
 {
-    //----------------------------------------------------------------------------------------------
     int b_read;
     int b_write;
     char *buffer = (char*)malloc(sizeof(char)*buflen);
@@ -155,5 +152,4 @@ void copy(int infd, int outfd, size_t buflen)
 
     free(buffer);
     // printf("leave function: copy <----\n");
-    //----------------------------------------------------------------------------------------------
 }

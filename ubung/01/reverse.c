@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 
     reverse(inname);
 
-
+    return 0;
 }
 
 void getparams(int argc, char **argv, char **inname)
@@ -44,15 +44,11 @@ void getparams(int argc, char **argv, char **inname)
     if (opterrflag) {
         exit(EXIT_FAILURE);
     }
-
-
 }
-
 
 void reverse (char *inname)
 {
-
-    int pos=-1;
+    int pos = -1;
     // int filesize;
     int infd;
     int outfd;
@@ -100,5 +96,4 @@ void reverse (char *inname)
     }
 
     exit(EXIT_SUCCESS);
-
 }
