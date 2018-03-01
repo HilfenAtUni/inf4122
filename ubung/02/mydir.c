@@ -17,16 +17,22 @@ int main(int argc, char *argv[])
     char dirname[256];
     char param_r = 0;
     int opt;
-    while(-1 != (opt = getopt(argc, argv, "r:")))
+    if (2 < argc)
     {
-        if ('r' == opt) {
-            param_r = 1;
+        while(-1 != (opt = getopt(argc, argv, "r:")))
+        {
+            printf("---- %c\n", opt);
+            if ('r' == opt) {
+                param_r = 1;
+            }
         }
     }
 
     if (1 == argc) { // when no parameter, as "."
         strcpy(dirname, ".");
-    } else if ((2 <= argc) && (1 != param_r)){
+    } else if((2 == argc) && (0 == strcmp("-r", argv[1]))){
+        strcpy(dirname, ".");
+    } else if ((2 < argc) && (1 != param_r)){
         strcpy(dirname, argv[1]);
     } else {
         strcpy(dirname, argv[2]);
@@ -57,6 +63,7 @@ int mydir(char *dirname, char param_r)
     while (NULL != (ent = readdir(dir))) {
         struct stat buf;
 
+        // through the d_name of entity to find stat information
         lstat(ent->d_name, &buf);
 
         // only when it is a directory, then display with "/"
