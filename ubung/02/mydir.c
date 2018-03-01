@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     int opt;
     while(-1 != (opt = getopt(argc, argv, "r:")))
     {
-        if (opt=='r') {
+        if ('r' == opt) {
             param_r = 1;
         }
     }
@@ -59,6 +59,7 @@ int mydir(char *dirname, char param_r)
 
         lstat(ent->d_name, &buf);
 
+        // only when it is a directory, then display with "/"
         if((4 == ent->d_type) && S_ISDIR(buf.st_mode)){
             // printf("----- %d\n", ent->d_type);
             printf("%s/\n", ent->d_name);
