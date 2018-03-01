@@ -20,18 +20,18 @@ int main(int argc, char *argv[])
         strcpy(dirname, argv[1]);
     }
 
-   statistics(dirname, stat_list);
+    statistics(dirname, stat_list);
 
-   printf("0 Bytes - 512 Bytes: %d \n", stat_list[0]);
-   printf("512 Bytes - 1 KiB: %d \n", stat_list[1]);
-   printf("1 KiB - 2 KiB: %d \n", stat_list[2]);
-   printf("2 KiB - 4 KiB: %d \n", stat_list[3]);
-   printf("4 KiB - 8 KiB: %d \n", stat_list[4]);
-   printf("8 KiB - 64 KiB: %d \n", stat_list[5]);
-   printf("64 KiB - 1 MiB: %d \n", stat_list[6]);
-   printf("Ab 1 MiB: %d \n", stat_list[7]);
+    printf("0 Bytes - 512 Bytes: %d \n", stat_list[0]);
+    printf("512 Bytes - 1 KiB: %d \n", stat_list[1]);
+    printf("1 KiB - 2 KiB: %d \n", stat_list[2]);
+    printf("2 KiB - 4 KiB: %d \n", stat_list[3]);
+    printf("4 KiB - 8 KiB: %d \n", stat_list[4]);
+    printf("8 KiB - 64 KiB: %d \n", stat_list[5]);
+    printf("64 KiB - 1 MiB: %d \n", stat_list[6]);
+    printf("Ab 1 MiB: %d \n", stat_list[7]);
 
-   return 0;
+    return 0;
 }
 
 
