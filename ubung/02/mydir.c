@@ -21,16 +21,15 @@ int main(int argc, char *argv[])
     {
         while(-1 != (opt = getopt(argc, argv, "r:")))
         {
-            printf("---- %c\n", opt);
             if ('r' == opt) {
                 param_r = 1;
             }
         }
     }
 
-    if (1 == argc) { // when no parameter, as "."
-        strcpy(dirname, ".");
-    } else if((2 == argc) && (0 == strcmp("-r", argv[1]))){
+    // when no parameter, as "."
+    if ((1 == argc) || \
+        ((2 == argc) && (0 == strcmp("-r", argv[1])))) {
         strcpy(dirname, ".");
     } else if ((2 < argc) && (1 != param_r)){
         strcpy(dirname, argv[1]);
