@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
   printf("main() \n");
 
-  pthread_create(&thread, NULL,&threadRunning, NULL );
+  pthread_create(&thread, NULL,&threadRunning, NULL);
 
   pthread_join(thread, NULL);
   printf("thread finished \n");

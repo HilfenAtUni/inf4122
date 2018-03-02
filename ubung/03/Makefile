@@ -2,9 +2,7 @@ CC=gcc
 CFLAGS=-Wall -pthread -std=c99
 DEBUG=-O0 -g
 
-all:
-	$(CC) $(CFLAGS) $(DEBUG) hellothread.c -o hellothread
-	$(CC) $(CFLAGS) $(DEBUG) square.c -o square
+all: hellothread square square2
 
 hellothread:
 	$(CC) $(CFLAGS) $(DEBUG) hellothread.c -o hellothread
@@ -12,6 +10,8 @@ hellothread:
 square:
 	$(CC) $(CFLAGS) $(DEBUG) square.c -o square
 
+square2:
+	$(CC) $(CFLAGS) $(DEBUG) square2.c -o square2
 
 clean:
-	rm -vfr *~ hellothread square
+	rm -vfr *~ *.o hellothread square square2
