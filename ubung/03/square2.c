@@ -3,89 +3,120 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
-
-#define N 5
+#include <unistd.h>
 
 //struct um die Aktuelle Position im Ausgabe array zu beschreiben.
 typedef struct position_ {
-	int row;
-	int col;
+    int tid;
+    int mask;
+    int core_count;
 } position_t;
 
 typedef struct position_ * position_p;
 
+#define N 5
+
 // global variables
 int matrix[N][N]= {{1,4,5,1,4}, {3,6,1,6,1}, {2,5,8,5,8}, {3,6,1,6,1}, {1,4,5,1,4}};
 int outMatrix[N][N]={{0}};
+int idx = 0;
 
 // determine of function
 void *square2Thread(void *arg);
-void square2();
+void square2(position_p data);
 void printOutMatrix();
-
+void cpus();
 
 void *square2Thread(void *arg)
 {
-	position_t *data = arg;
+    position_t *data = arg;
 
-	//Multiplikation
-	for (int i=0; i<N; ++i)
-	{
-		int sum = 0;
-		for(int n = 0; n< N; n++){
-			sum += matrix[data->row][n] * matrix[n][i];
-		}
-		//Wert an die Position im Ausgabe Array schreiben
-		outMatrix[data->row][i] = sum;
-		// printf("data->row:%d, i:%d, sum: %d\n", data->row, i, sum);
-	}
+    for (int i = 0; i < N; ++i)
+    {
+        int r = ((data->mask>>i) & 0x1);
+        if (1 == r)
+        {
+            for (int jj = 0; jj < N; ++jj)
+            {
+                int sum = 0;
+                for(int n = 0; n< N; n++){
+                    sum += matrix[i][n] * matrix[n][jj];
+                }
+                //Wert an die Position im Ausgabe Array schreiben
+                outMatrix[i][jj] = sum;
+            }
+        }
+    }
 
-	pthread_exit(0);
+    pthread_exit(0);
 }
 
-void square2()
+void square2(position_p data)
 {
-	 for(int i = 0; i < N; i++) {
-		//Assign a row and column for each thread
-		position_p data = (position_p) malloc(sizeof(position_t));
-		if(NULL == data){
-			printf("Keine freierspeicher vorhanden");
-			return;
-		}
-		data->row = i;
+    if(NULL == data){
+        printf("Keine freierspeicher vorhanden");
+        return;
+    }
 
-		// Threads
-		pthread_t tid;
-		printf("create thread %d\n", i);
-		pthread_create(&tid, NULL, square2Thread, data);
-		pthread_join(tid, NULL);
-	 }
+    // Threads
+    pthread_t tid;
+    printf("create thread %d\n", idx++);
+    data->tid += 1;
+    pthread_create(&tid, NULL, square2Thread, data);
+    pthread_join(tid, NULL);
+}
+
+void cpus()
+{
+    //Assign a row and column for each thread
+    position_p data = (position_p) malloc(sizeof(position_t));
+    if(NULL == data){
+        printf("Keine freierspeicher vorhanden");
+        return;
+    }
+
+    data->core_count = sysconf(_SC_NPROCESSORS_CONF);
+    data->mask = (data->mask & (0x0));
+
+    for (int i = 0; i < data->core_count; ++i)
+    {
+        for (int j = 0; j < N; ++j)
+        {
+            if (i == (j%data->core_count)) {
+                data->mask = data->mask | (1<<j);
+            }
+        }
+        square2(data);
+    }
+
+    free(data);
 }
 
 void printOutMatrix()
 {
-	for(int i = 0; i < N; i++) {
-		for(int j = 0; j < N; j++) {
-			printf("%4d", outMatrix[i][j]);
-		}
-		printf("\n");
-	 }
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j < N; j++) {
+            printf("%4d", outMatrix[i][j]);
+        }
+        printf("\n");
+     }
 }
 
 int main(int argc, char *argv[])
 {
-	square2();
-	printf("Matrix A:\n");
-	for (int i = 0; i < N; ++i)
-	{
-		for (int j = 0; j < N; ++j)
-		{
-			printf("%4d", matrix[i][j]);
-		}
-		printf("\n");
-	}
-	printf("Matrix A x A:\n");
-	printOutMatrix();
+    // square2();
+    cpus();
+    printf("Matrix A:\n");
+    for (int i = 0; i < N; ++i)
+    {
+        for (int j = 0; j < N; ++j)
+        {
+            printf("%4d", matrix[i][j]);
+        }
+        printf("\n");
+    }
+    printf("Matrix A x A:\n");
+    printOutMatrix();
 
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
