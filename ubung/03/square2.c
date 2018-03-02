@@ -4,12 +4,14 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 
 //struct um die Aktuelle Position im Ausgabe array zu beschreiben.
 typedef struct position_ {
     int tid;
     int mask;
     int core_count;
+    int matrix_size;
 } position_t;
 
 typedef struct position_ * position_p;
@@ -31,15 +33,15 @@ void *square2Thread(void *arg)
 {
     position_t *data = arg;
 
-    for (int i = 0; i < N; ++i)
+    for (int i = 0; i < data->matrix_size; ++i)
     {
         int r = ((data->mask>>i) & 0x1);
         if (1 == r)
         {
-            for (int jj = 0; jj < N; ++jj)
+            for (int jj = 0; jj < data->matrix_size; ++jj)
             {
                 int sum = 0;
-                for(int n = 0; n< N; n++){
+                for(int n = 0; n< data->matrix_size; n++){
                     sum += matrix[i][n] * matrix[n][jj];
                 }
                 //Wert an die Position im Ausgabe Array schreiben
@@ -77,10 +79,12 @@ void cpus()
 
     data->core_count = sysconf(_SC_NPROCESSORS_CONF);
     data->mask = (data->mask & (0x0));
+    data->matrix_size = (int)sqrt(sizeof(matrix)/sizeof(int));
+    // printf("matrix_size: %d\n", data->matrix_size);
 
     for (int i = 0; i < data->core_count; ++i)
     {
-        for (int j = 0; j < N; ++j)
+        for (int j = 0; j < data->matrix_size; ++j)
         {
             if (i == (j%data->core_count)) {
                 data->mask = data->mask | (1<<j);
