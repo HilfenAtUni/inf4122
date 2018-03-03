@@ -33,3 +33,9 @@
 *.bk
 *.zip
 *aufgabe-*
+
+# eclipse
+*.classpath
+*.project
+*.settings
+
