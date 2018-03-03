@@ -1,6 +1,11 @@
 # binary file
 *mycopy
 *reverse
+*mydir
+*square
+*square2
+*hellothread
+*statistics
 
 # test file
 *.rev
@@ -9,7 +14,9 @@
 *.o
 *.obj
 *.a
-*.
+
+# java
+*.class
 
 # mac
 *.DS_Store
@@ -24,4 +31,5 @@
 *.bak
 *.swp
 *.bk
-
+*.zip
+*aufgabe-*
