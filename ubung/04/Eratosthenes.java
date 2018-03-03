@@ -6,7 +6,7 @@ public class Eratosthenes {
 
 	public static void initArray(int size) {
 		for (int i=0; i<size; i++) {
-			ls[i] = i+1;
+			ls[i] = i;
 //			System.out.print(ls[i] + ",");
 //			if(0 == i%11) System.out.println();
 		}
