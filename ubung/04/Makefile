@@ -15,4 +15,4 @@ clean:
 	rm -vfr *~ *.class
 
 test:
-	$(JAVA) Sieve
+	$(JAVA) Eratosthenes
