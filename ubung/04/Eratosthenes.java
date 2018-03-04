@@ -1,8 +1,9 @@
 
-public class Eratosthenes {
+public class Eratosthenes implements Runnable {
 
 	static int LEN = 120 + 1;
 	static int []ls = new int[LEN];
+	static int idx = 0;
 
 	public static void initArray(int size) {
 		for (int i=0; i<size; i++) {
@@ -22,24 +23,51 @@ public class Eratosthenes {
 				}
 				if(i!=j && 0 == ls[j]%i){
 					ls[j] = 0;
-//					System.out.print("j:" + j + ",");
-//					if(0 == j%11) System.out.println();
 				}
 			}
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void erathosthense(int i) {
+		// delete 1
+		ls[1] = 0;
+		for(int j=i; j<LEN; j++){
+			if(0 == ls[j]){
+				continue;
+			}
+			if(i!=j && 0 == ls[j]%i){
+				ls[j] = 0;
+			}
+		}
+	}
 
-		initArray(LEN);
-
-		erathosthense();
-
+	public static void display() {
 		for(int i=1; i<LEN; i++) {
 			if(0 != ls[i]){
 				System.out.print(ls[i] + ", ");
 			}
 		}
 		System.out.println();
+	}
+	
+	public static void main(String[] args) {
+
+		initArray(LEN);
+
+		erathosthense();
+		display();
+
+		for (int i=2; i<LEN; i++){
+			Eratosthenes erat = new Eratosthenes();
+			erat.idx = i;
+			erat.run();
+		}
+		display();
+	}
+
+	public void run() {
+		// TODO Auto-generated method stub
+		// System.out.println("thread: " + this.idx);
+		erathosthense(this.idx);
 	}
 }
