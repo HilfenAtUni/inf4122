@@ -39,7 +39,7 @@ class SieveThread extends Thread {
 				sr.start();
 			}
 			out.write(curr); // current an Worker weiter geben
-
+			outFirst.write(curr+1);
 		}
 		} catch (IOException e){
         
@@ -57,6 +57,7 @@ public class Sieve {
     PipedWriter firstWriter= new PipedWriter(); 
     SieveThread startThread = new SieveThread(2,firstWriter);
     SieveThread.outFirst=firstWriter;
+    printf(2);
     startThread.start();
     firstWriter.write(3);
     startThread.join();
