@@ -1,76 +1,64 @@
-/*
-Hier mal mein Ansatz, tut aber leider nicht das was es soll
-*/
+import java.io.*;
+import java.util.*;
 
-public class Sieve {
+class SieveThread extends Thread {
 
-	public static void main  (String[] args) throws InterruptedException{
-		SieveRunnable r=new SieveRunnable(2, null);
-		Thread t=new Thread(r);
-		r.setFirst(t);
-		t.start();
-		System.out.println("main");
-
-		t.join();
-
-	}
-
-
-}
-class SieveRunnable implements Runnable{
-	static int curr=3;
-	static int n=100;
-	SieveRunnable sr;
-	Thread first;
-	Thread next;
-
-	int z;
-	public SieveRunnable (int i, Thread t){
-		this.z=i;
-		this.first=t;
-	}
-	public void setFirst(Thread t){
-		this.first=t;
-	}
-
-	public synchronized void run(){
+  private PipedWriter out;
+  static PipedWriter outFirst= new PipedWriter();
+  private int n=20;
+  private int z;
+  private PipedReader in;
+	private int curr;
+  
+  public static void SetFirstWriter(PipedWriter first){
+    outFirst=first;
+  }
+  public SieveThread(int z, PipedWriter sender){
+    this.z=z;
+    try {in=new PipedReader(sender);}
+    catch (IOException e){};
+  }
+ 
+  
+	public  void run(){
 		while(true){
-		System.out.println("run with z="+z);
-		if(SieveRunnable.curr==n){
-					System.out.println("if");
+      try{
+		curr=in.read();
+      
+		if(curr==n){
 			return;
 		}
 		if(curr%z==0){
-			System.out.println("ink");
-			SieveRunnable.curr++;
-			try{
-				first.notify();
-				this.wait();
-				System.out.println("pause "+z);
-			} catch (InterruptedException e){}
+			outFirst.write(curr+1);
 
 		}else {
-			if(sr==null){
-					SieveRunnable sr=new SieveRunnable(curr,first);
+			if(out==null){
+        out=new PipedWriter();
+					SieveThread sr=new SieveThread(curr,out);
 				System.out.println(curr);
-				next=new Thread(sr);
-				next.start();
-				try{
-					this.wait();
-					System.out.println("pause "+z);
-
-				} catch (InterruptedException e){}
-
+				sr.start();
 			}
-			try{
-				next.notify();
-				System.out.println("pause "+z);
-				this.wait();
+			out.write(curr);
 
-			} catch (InterruptedException e){}
 		}
-		}
-
-
-	}
+		} catch (IOException e){
+        
+      }
+  }
 }
+}
+		
+	
+ 
+  
+
+public class Sieve {
+  public static void main(String[] args) throws Exception {
+    PipedWriter firstWriter= new PipedWriter(); 
+    SieveThread startThread = new SieveThread(2,firstWriter);
+    SieveThread.outFirst=firstWriter;
+    startThread.start();
+    firstWriter.write(3);
+    startThread.join();
+  }
+} 
