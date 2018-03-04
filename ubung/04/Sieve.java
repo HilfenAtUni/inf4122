@@ -25,20 +25,20 @@ class SieveThread extends Thread {
       try{
 		curr=in.read();
       
-		if(curr==n){
+		if(curr==n){// Itterations ende Ereicht
 			return;
 		}
-		if(curr%z==0){
+		if(curr%z==0){//z ist vielfaches -> current um eins erhoehen
 			outFirst.write(curr+1);
 
 		}else {
-			if(out==null){
+			if(out==null){// Neuen Worker erzeugen
         out=new PipedWriter();
 					SieveThread sr=new SieveThread(curr,out);
 				System.out.println(curr);
 				sr.start();
 			}
-			out.write(curr);
+			out.write(curr); // current an Worker weiter geben
 
 		}
 		} catch (IOException e){
