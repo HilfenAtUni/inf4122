@@ -5,7 +5,9 @@
 #include <stdlib.h>
 
 #include <assert.h>
-
+/*
+Erste Teilaufgabe
+*/
 // #define N 3
 #define N 5
 
@@ -50,7 +52,7 @@ void square()
             //Assign a row and column for each thread
             position_p data = (position_p) malloc(sizeof(position_t));
             if(NULL == data){
-                printf("Keine freierspeicher vorhanden");
+                printf("Keine freier Speicher vorhanden");
                 return;
             }
             data->row = i;

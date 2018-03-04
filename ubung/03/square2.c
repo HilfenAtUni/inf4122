@@ -17,7 +17,7 @@ typedef struct position_ {
 typedef struct position_ * position_p;
 
 #define N 5
-
+// Komplett Aufgabe 3.2
 // global variables
 int matrix[N][N]= {{1,4,5,1,4}, {3,6,1,6,1}, {2,5,8,5,8}, {3,6,1,6,1}, {1,4,5,1,4}};
 int outMatrix[N][N]={{0}};
@@ -56,7 +56,7 @@ void *square2Thread(void *arg)
 void square2(position_p data)
 {
     if(NULL == data){
-        printf("Keine freierspeicher vorhanden");
+        printf("Keine freier Speicher vorhanden");
         return;
     }
 
@@ -73,7 +73,7 @@ void cpus()
     //Assign a row and column for each thread
     position_p data = (position_p) malloc(sizeof(position_t));
     if(NULL == data){
-        printf("Keine freierspeicher vorhanden");
+        printf("Keine freier Speicher vorhanden");
         return;
     }
 
