@@ -1,65 +1,86 @@
 import java.io.*;
-import java.util.*;
-
-class SieveThread extends Thread {
-
-  private PipedWriter out;
-  static PipedWriter outFirst= new PipedWriter();
-  private int n=20;
-  private int z;
-  private PipedReader in;
-	private int curr;
-  
-  public static void SetFirstWriter(PipedWriter first){
-    outFirst=first;
-  }
-  public SieveThread(int z, PipedWriter sender){
-    this.z=z;
-    try {in=new PipedReader(sender);}
-    catch (IOException e){};
-  }
- 
-  
-	public  void run(){
-		while(true){
-      try{
-		curr=in.read();
-      
-		if(curr==n){// Itterations ende Ereicht
-			return;
-		}
-		if(curr%z==0){//z ist vielfaches -> current um eins erhoehen
-			outFirst.write(curr+1);
-
-		}else {
-			if(out==null){// Neuen Worker erzeugen
-        out=new PipedWriter();
-					SieveThread sr=new SieveThread(curr,out);
-				System.out.println(curr);
-				sr.start();
-			}
-			out.write(curr); // current an Worker weiter geben
-			outFirst.write(curr+1);
-		}
-		} catch (IOException e){
-        
-      }
-  }
-}
-}
-		
-	
- 
-  
+import java.util.concurrent.*;
 
 public class Sieve {
-  public static void main(String[] args) throws Exception {
-    PipedWriter firstWriter= new PipedWriter(); 
-    SieveThread startThread = new SieveThread(2,firstWriter);
-    SieveThread.outFirst=firstWriter;
-    printf(2);
-    startThread.start();
-    firstWriter.write(3);
-    startThread.join();
-  }
-} 
+
+	public static void main(String[] args) throws Exception {
+
+		PipedOutputStream firstWriter = new PipedOutputStream();
+		SieveThread startThread = new SieveThread(2, firstWriter);
+
+		SieveThread.outFirst = firstWriter;
+
+		System.out.println(2);
+		startThread.start();
+		firstWriter.write(3);
+		startThread.join();
+	}
+
+	static class SieveThread extends Thread {
+
+		private final static int N = 100;
+		private int z;
+		private int curr;
+		// private PipedWriter out;
+		// private PipedReader in;
+		// static PipedWriter outFirst = new PipedWriter();
+		private PipedOutputStream out;
+		private PipedInputStream in;
+		static PipedOutputStream outFirst = new PipedOutputStream();
+
+		public static void SetFirstWriter(PipedOutputStream first) {
+			outFirst = first;
+		}
+
+		public SieveThread(int z, PipedOutputStream sender) {
+			this.z = z;
+			try {
+				in = new PipedInputStream(sender);
+			} catch (IOException e) {
+				//
+			}
+		}
+
+		public void run() {
+			while (true) {
+				try {
+					// Thread.sleep(500);
+					curr = in.read();
+					// System.out.println("curr: " + curr);
+
+					if (curr == N) {// Itterations ende Ereicht
+						System.out.println("finished.....");
+						return;
+					}
+					if (curr % z == 0) {// z ist vielfaches -> current um eins
+										// erhoehen
+
+						// System.out.println("write curr: " + curr +
+						// " to outFirst");
+						outFirst.write(curr + 1);
+						// Thread.sleep(100);
+					} else {
+						// System.out.println("curr%z != 0 -> " + curr);
+						if (out == null) {// Neuen Worker erzeugen
+							out = new PipedOutputStream();
+							SieveThread sr = new SieveThread(curr, out);
+							sr.start();
+							System.out.println(curr);
+							out.write(curr); // current an Worker weiter geben
+						} else {
+							System.out.println(curr);
+							outFirst.write(curr + 1);
+							// Thread.sleep(500);
+						}
+					}
+				} catch (IOException e) {
+					//
+					// } catch (InterruptedException e) {
+					// // TODO Auto-generated catch block
+					// e.printStackTrace();
+				}
+			}
+		}
+	}
+
+}
