@@ -6,7 +6,7 @@ AS=as
 
 all: deadlock
 
-deadlock:
+deadlock: deadlock.c deadlock.h
 	$(CC) $(CFLAGS) $(DEBUG) -fPIC deadlock.c -o deadlock
 
 clean:
