@@ -4,14 +4,8 @@ DEBUG=-O0 -g
 
 all: sender
 
-logger.o:
-	$(CC) $(CFLAGS) $(DEBUG) -c logger.c -o logger.o
-
-sender: logger.o
-	$(CC) $(CFLAGS) $(DEBUG) logger.o sender.c -o sender
-
-receiver:
-	$(CC) $(CFLAGS) $(DEBUG) receiver.c -o receiver
+sender:
+	$(CC) $(CFLAGS) $(DEBUG) sender.c -o sender
 
 clean:
-	rm -vfr *~ *.o sender receiver
+	rm -vfr *~ *.o sender
