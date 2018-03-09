@@ -130,7 +130,7 @@ static void handler_p_sig2(int signum, siginfo_t* siginf, void* ptr)
 
 void waitForReceiveEnd()
 {
-    printf("waitForReceiveEnd -- setting for receiving....\n");
+    // printf("waitForReceiveEnd -- setting for receiving....\n");
     pthread_cond_init(&receiveEndCond, &receiveEnd);
     pthread_cond_wait(&receiveEndCond, &p_mutex);
     pthread_cond_destroy(&receiveEndCond);
