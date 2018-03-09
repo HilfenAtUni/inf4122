@@ -167,11 +167,11 @@ int main(int argc, char const *argv[])
 
 
     pid_t pid = fork();
-    printf("............. fork ----> child pid: %d\n", pid);
+    if(0 != pid)
+        printf("............. fork ----> child pid: %d\n", pid);
     if(!pid){ //child
         // while(1)
         // {
-            // sleep(rand()%5);
             pid = getppid();
             char* line = NULL;
             size_t lineLen;
