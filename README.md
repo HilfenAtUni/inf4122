@@ -1,1 +1,2 @@
-# inf4122
+# bs_praktikum
+ubungen des INF4122

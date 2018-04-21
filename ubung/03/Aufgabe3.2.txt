@@ -1,0 +1,1 @@
+Da in unserem Programm viele Multiplikationen je Thread ausgeführt werden müssen haben wir uns für einen Thread je Prozessor entschieden. 
